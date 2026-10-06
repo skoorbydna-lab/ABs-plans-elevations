@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plans and Elevations</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5f0;--panel:#fff;--ink:#1c2a48;--mute:#66728a;--line:#c9d2e2;--blue:#2f5fd0;--ok:#16825d;--bad:#c4402f;--cell:#2f5fd0;--grid:#e6ebf4;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141b2b;--panel:#1d2740;--ink:#e8edf9;--mute:#9aa7c4;--line:#37466a;--blue:#7ea2ff;--ok:#4cc79a;--bad:#ff8272;--cell:#7ea2ff;--grid:#2a3656}}
+:root[data-theme="dark"]{--bg:#141b2b;--panel:#1d2740;--ink:#e8edf9;--mute:#9aa7c4;--line:#37466a;--blue:#7ea2ff;--ok:#4cc79a;--bad:#ff8272;--cell:#7ea2ff;--grid:#2a3656}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 Lexend,system-ui,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:16px}
+h1{font-size:1.5rem;margin:0;letter-spacing:-.01em}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.tabs{display:flex;border:2px solid var(--ink);border-radius:10px;overflow:hidden}
+.tabs button{border:0;background:none;color:var(--ink);font:600 .9rem Lexend,sans-serif;padding:9px 14px;cursor:pointer}
+.tabs button.on{background:var(--ink);color:var(--bg)}
+#chips{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+#chips button{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);font:600 .8rem Lexend;cursor:pointer;position:relative}
+#chips button.on{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue)}
+#chips button.g{background:var(--ok);border-color:var(--ok);color:#fff}#chips button.a{background:#c27a00;border-color:#c27a00;color:#fff}#chips button.r{background:var(--bad);border-color:var(--bad);color:#fff}
+.key{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.8rem;color:var(--mute);margin:-6px 0 14px}.key span.sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}.sw.g{background:var(--ok)}.sw.a{background:#c27a00}.sw.r{background:var(--bad)}
+#chips i{position:absolute;left:-1px;bottom:-5px;right:-1px;height:4px;border-radius:2px;background:var(--mute);opacity:.5}
+#chips i.n3{background:#c9852b}#chips i.n4{background:#a63f8f}
+main{display:grid;grid-template-columns:minmax(260px,5fr) 7fr;gap:14px}
+@media(max-width:760px){main{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1.5px solid var(--line);border-radius:14px;padding:14px}
+.panel h2{font-size:1rem;margin:0 0 4px}.sub{color:var(--mute);font-size:.85rem;margin:0 0 10px}
+.views{display:flex;flex-wrap:wrap;gap:16px 22px}
+.vb{display:flex;flex-direction:column;gap:5px}.vb b{font-size:.85rem}
+.vb small{color:var(--mute);font-size:.75rem}
+.grid{display:grid;gap:0;border:2px solid var(--ink);width:max-content;background:var(--grid)}
+.cell{width:var(--cs);height:var(--cs);border:1px solid var(--line);background:var(--panel)}
+.cell.on{background:var(--cell);border-color:var(--ink)}
+.grid.click .cell{cursor:pointer}.grid.click .cell:hover{outline:2px solid var(--blue);outline-offset:-2px}
+.grid.bad{border-color:var(--bad)}.grid.good{border-color:var(--ok)}
+canvas{width:100%;height:min(62vw,420px);min-height:300px;display:block;touch-action:none;border-radius:10px;background:var(--grid);cursor:grab}
+.bar{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
+.bar button,.sets button{font:600 .85rem Lexend;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 11px;border-radius:9px;cursor:pointer}
+.bar button.on,.sets button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.bar .go{background:var(--blue);color:#fff;border-color:var(--blue)}:root[data-theme=dark] .bar .go{color:#10192e}
+.bar .sp{flex:1}
+button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+#msg{margin-top:12px;padding:10px 12px;border-radius:10px;font-weight:600;min-height:44px;background:var(--grid)}
+#msg.ok{background:var(--ok);color:#fff}#msg.bad{background:var(--bad);color:#fff}#msg.amb{background:#c27a00;color:#fff}
+.info{color:var(--mute);font-size:.85rem;margin-top:8px}
+.setbar{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:space-between;align-items:center;margin-top:14px}.sets{display:flex;flex-wrap:wrap;gap:6px}#score{font-weight:700;font-size:1.05rem;text-align:right}#score small{display:block;font-weight:400;color:var(--mute);font-size:.75rem}
+</style></head><body><div class="wrap">
+<div class="top"><div><h1>Plans and elevations</h1><div class="sub" style="margin:0">Cubes, views and 20 questions in each set</div></div>
+<div class="tabs" role="tablist"><button id="tb" class="on">Build from views</button><button id="td">Draw the views</button></div></div>
+<div class="setbar"><div class="sets" id="sets"></div><div id="score"></div></div>
+<div id="chips"></div>
+<div class="key"><span><span class="sw g"></span>Correct with fewest cubes</span><span><span class="sw a"></span>Correct, more cubes</span><span><span class="sw r"></span>Incorrect</span><span>Score: 10 for fewest cubes, minus 1 per extra cube (minimum 5), 0 if incorrect</span></div>
+<main>
+<section class="panel"><h2 id="vt"></h2><p class="sub" id="vs"></p><div class="views" id="views"></div></section>
+<section class="panel"><h2 id="ct"></h2><p class="sub" id="cs2"></p><canvas id="cv"></canvas>
+<div class="bar" id="bar"></div><div class="info" id="info"></div><div id="msg" role="status"></div></section>
+</main></div>
+<script>
+const $=id=>document.getElementById(id);
+let mode='build',lvl=0,Q,hm,dr,yaw=-.6,pitch=.55,edit='add',faces=[],res={};
+let store={cur:{type:'orig',seed:0},rec:{}},done;
+try{store=JSON.parse(localStorage.getItem('pe-store2'))||store}catch(e){}
+const getDone=()=>{const k=store.cur.type+'-'+store.cur.seed;done=store.rec[k]||(store.rec[k]={build:{},draw:{}})};getDone();
+const save=()=>{try{localStorage.setItem('pe-store2',JSON.stringify(store))}catch(e){}};
+const SZ={orig:i=>i<2?2:i<10?3:i<18?4:5,easy:i=>i<6?2:i<18?3:4,medium:i=>i<6?3:i<16?4:5,hard:i=>i<4?4:5};
+const NAMES={orig:'Original set',easy:'New easy set',medium:'New medium set',hard:'New hard set'};
+const TIPS={orig:'The classic 20 questions, 2×2 up to 5×5',easy:'Mostly 2×2 and 3×3, finishing on 4×4',medium:'3×3 and 4×4, finishing on 5×5',hard:'4×4 and 5×5'};
+function newSet(t){if(t=='orig'){store.cur={type:'orig',seed:0}}else store.cur={type:t,seed:1+Math.floor(Math.random()*900000)};getDone();lvl=0;save();load()}
+function renderSets(){const e=$('sets');e.innerHTML='';for(const t in NAMES){const b=document.createElement('button');b.textContent=NAMES[t];b.title=TIPS[t];b.className=store.cur.type==t?'on':'';b.onclick=()=>{if(t=='orig'&&store.cur.type=='orig')return;newSet(t)};e.appendChild(b)}}
+function score(){const sm=m=>Object.values(done[m]).reduce((a,r)=>a+r.p,0),a=sm('build'),b=sm('draw');$('score').innerHTML=`Score ${a+b} / 400<small>Build ${a} / 200 &nbsp;•&nbsp; Draw ${b} / 200</small>`}
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const size=i=>SZ[store.cur.type](i);
+function setS(x,p){const o=done[mode][lvl];if(!o||p>o.p)done[mode][lvl]={s:x,p};save();score()}
+function gen(kind,i){const sd=store.cur.seed,n=size(i),r=rng(i*977+(kind=='draw'?5000:1)+13+sd*7919);
+ for(let t=0;t<500;t++){const p=.55+.4*i/19,h=[];
+  for(let k=0;k<n*n;k++)h.push(r()<p?1+Math.floor(r()*n):0);
+  const f=h.filter(v=>v),d=new Set(f).size,tot=f.reduce((a,b)=>a+b,0);
+  if(f.length<Math.ceil(n*n*.6)||Math.max(...h)<2||tot<n+1)continue;
+  if(!sd){if(i>=3&&d<2)continue;if(i>=10&&d<3)continue;if(i>=3&&tot<=f.length)continue}else{if(n>=3&&d<2)continue;if(n>=4&&d<3)continue;if(n>=3&&tot<=f.length)continue}
+  return{n,h,i}}
+ return{n,h:Array.from({length:n*n},(_,k)=>1+k%n),i}}
+// h[r*n+c]: r=0 back ... r=n-1 front, c=0 left
+function views(h,n){const pl=[],fr=[],sd=[];
+ for(let r=0;r<n;r++){pl.push([]);for(let c=0;c<n;c++)pl[r].push(h[r*n+c]>0)}
+ const F=[],S=[];for(let c=0;c<n;c++){let m=0;for(let r=0;r<n;r++)m=Math.max(m,h[r*n+c]);F.push(m)}
+ for(let i=0;i<n;i++){let m=0,r=n-1-i;for(let c=0;c<n;c++)m=Math.max(m,h[r*n+c]);S.push(m)}
+ for(let row=0;row<n;row++){const L=n-1-row;fr.push(F.map(v=>v>L));sd.push(S.map(v=>v>L))}
+ return{plan:pl,front:fr,side:sd,F,S}}
+function par(h,n){const v=views(h,n),a=h.map(x=>x>0?1:0),F=v.F,S=v.S;// S index i => row r=n-1-i
+ const Sr=r=>S[n-1-r],cm=c=>Math.max(...[...Array(n).keys()].map(r=>a[r*n+c])),rm=r=>Math.max(...[...Array(n).keys()].map(c=>a[r*n+c]));
+ for(let x=n;x>=2;x--){let U=[...Array(n).keys()].filter(c=>F[c]==x&&cm(c)<x),R=[...Array(n).keys()].filter(r=>Sr(r)==x&&rm(r)<x);
+  for(const c of [...U])for(const r of [...R]){if(U.includes(c)&&R.includes(r)&&h[r*n+c]>0){a[r*n+c]=x;U=U.filter(q=>q!=c);R=R.filter(q=>q!=r)}}
+  for(const c of U){let b=-1;for(let r=0;r<n;r++)if(h[r*n+c]>0&&Sr(r)>=x){if(b<0||R.includes(r))b=r}a[b*n+c]=Math.max(a[b*n+c],x)}
+  for(const r of R){let b=-1;for(let c=0;c<n;c++)if(h[r*n+c]>0&&F[c]>=x){b=c;if(cm(c)<x)break}a[r*n+b]=Math.max(a[r*n+b],x)}}
+ return Math.min(a.reduce((p,q)=>p+q,0),h.reduce((p,q)=>p+q,0))}
+function load(){Q=gen(mode,lvl);Q.par=par(Q.h,Q.n);Q.v=views(Q.h,Q.n);const n=Q.n;
+ hm=Array(n*n).fill(0);const e=()=>Array.from({length:n},()=>Array(n).fill(false));dr={plan:e(),front:e(),side:e()};res={};yaw=-.6;pitch=.55;render()}
+function grid(v,key,cs){const n=v.length,d=document.createElement('div');d.className='grid'+(mode=='draw'?' click':'');
+ d.style.gridTemplateColumns=`repeat(${n},${cs}px)`;d.style.setProperty('--cs',cs+'px');
+ if(res[key]!==undefined)d.classList.add(res[key]?'good':'bad');
+ v.forEach((row,r)=>row.forEach((on,c)=>{const e=document.createElement('div');e.className='cell'+(on?' on':'');
+  if(mode=='draw')e.onclick=()=>{dr[key][r][c]=!dr[key][r][c];delete res[key];renderViews();msg('')};d.appendChild(e)}));return d}
+function renderViews(){const el=$('views');el.innerHTML='';const cs=Q.n==2?46:Q.n==3?40:Q.n==4?34:30;
+ const src=mode=='build'?Q.v:dr;
+ [['plan','Plan','from above'],['front','Front elevation','from the front'],['side','Side elevation','from the right']].forEach(([k,t,s])=>{
+  const b=document.createElement('div');b.className='vb';b.innerHTML=`<b>${t}</b>`;b.appendChild(grid(src[k],k,cs));
+  const sm=document.createElement('small');sm.textContent=s;b.appendChild(sm);el.appendChild(b)})}
+function render(){const n=Q.n;renderSets();score();
+ $('chips').innerHTML='';for(let i=0;i<20;i++){const b=document.createElement('button');b.textContent=i+1;b.title=`Question ${i+1}: ${size(i)}×${size(i)}`;
+  b.className=(i==lvl?'on ':'')+(done[mode][i]?done[mode][i].s:'');b.innerHTML+=`<i class="n${size(i)}"></i>`;b.onclick=()=>{lvl=i;load()};$('chips').appendChild(b)}
+ $('tb').className=mode=='build'?'on':'';$('td').className=mode=='draw'?'on':'';
+ const g=`${n}×${n} base`;
+ if(mode=='build'){$('vt').textContent=`Question ${lvl+1}: build the shape`;$('vs').textContent=`${g}. Make a cube shape that matches all three views.`;
+  $('ct').textContent='Your model';$('cs2').textContent='Tap a floor square or a cube face to add. Drag to turn the model.'}
+ else{$('vt').textContent=`Question ${lvl+1}: draw the views`;$('vs').textContent=`${g}. Tap squares to shade each view of the shape.`;
+  $('ct').textContent='The shape';$('cs2').textContent='Drag to turn it and look at every side.'}
+ renderViews();bar();draw3();info()}
+function bar(){const b=$('bar');b.innerHTML='';
+ const add=(t,f,c)=>{const e=document.createElement('button');e.textContent=t;e.onclick=f;if(c)e.className=c;b.appendChild(e);return e};
+ if(mode=='build'){const a=add('Add cube',()=>{edit='add';bar()},edit=='add'?'on':'');add('Remove cube',()=>{edit='rm';bar()},edit=='rm'?'on':'');
+  add('Clear',()=>{hm.fill(0);msg('');info();draw3()})}
+ else add('Clear drawings',()=>{for(const k in dr)dr[k].forEach(r=>r.fill(false));res={};msg('');renderViews()});
+ add('3D view',()=>{yaw=-.6;pitch=.55;draw3()});add('Front',()=>{yaw=0;pitch=0;draw3()});add('Right',()=>{yaw=-Math.PI/2;pitch=0;draw3()});add('Top',()=>{yaw=0;pitch=Math.PI/2;draw3()});
+ add('Turn ↺',()=>{yaw-=Math.PI/2;draw3()});add('Turn ↻',()=>{yaw+=Math.PI/2;draw3()});
+ const s=document.createElement('span');s.className='sp';b.appendChild(s);
+ add('Check answer',check,'go');add('Next question',()=>{lvl=(lvl+1)%20;load()})}
+function info(){$('info').textContent=mode=='build'?`Cubes used: ${hm.reduce((a,b)=>a+b,0)}  •  Challenge: use ${Q.par} cubes or fewer`:'';}
+function msg(t,c){const m=$('msg');m.textContent=t||'Build, then press Check answer.';if(mode=='draw'&&!t)m.textContent='Draw all three views, then press Check answer.';m.className=c||''}
+function check(){const n=Q.n;
+ if(mode=='build'){const v=views(hm,n),cnt=hm.reduce((a,b)=>a+b,0);res={};
+  const eq=k=>JSON.stringify(v[k])==JSON.stringify(Q.v[k]);
+  const bad=['plan','front','side'].filter(k=>!eq(k));
+  if(!cnt)return msg('Add some cubes first.','bad');
+  if(!bad.length){const g=cnt<=Q.par,pt=g?10:Math.max(5,10-(cnt-Q.par));setS(g?'g':'a',pt);render();
+   msg(g?`Correct with ${cnt} cubes, the fewest: 10 points!`:`Correct with ${cnt} cubes: ${pt} points. Use ${Q.par} or fewer for 10.`,g?'ok':'amb')}
+  else{setS('r',0);render();msg(`Incorrect, 0 points. Check the ${bad.join(' and ')} of your model. Look at it from the ${bad.map(k=>({plan:'top',front:'front',side:'right'}[k])).join(' and ')}.`,'bad')}}
+ else{res={};['plan','front','side'].forEach(k=>res[k]=JSON.stringify(dr[k])==JSON.stringify(Q.v[k]));
+  const ok=Object.values(res).every(Boolean);
+  setS(ok?'g':'r',ok?10:0);render();
+  const w=['plan','front','side'].filter(k=>!res[k]);
+  msg(ok?'All three views are correct: 10 points!':`Incorrect, 0 points. Check your ${w.join(' and ')} (outlined in red).`,ok?'ok':'bad');if(ok){res={plan:true,front:true,side:true};renderViews()}}}
+// ---- 3D ----
+const cv=$('cv'),ctx=cv.getContext('2d');
+function mk(w,h,n){const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch),s=Math.min(w,h)/(n*1.75+2.2);
+ return{cy,sy,cp,sp,s,P:(x,y,z)=>{const X=x-n/2,Z=z-n/2,Y=y-n*.4,x1=X*cy+Z*sy,z1=-X*sy+Z*cy;return[w/2+s*x1,h/2-s*(Y*cp-z1*sp),Y*sp+z1*cp]}}}
+const FC=[['top',[0,1,0],[[0,1,0],[1,1,0],[1,1,1],[0,1,1]],72],['+x',[1,0,0],[[1,0,0],[1,0,1],[1,1,1],[1,1,0]],46],
+ ['-x',[-1,0,0],[[0,0,0],[0,1,0],[0,1,1],[0,0,1]],46],['+z',[0,0,1],[[0,0,1],[1,0,1],[1,1,1],[0,1,1]],58],['-z',[0,0,-1],[[0,0,0],[0,1,0],[1,1,0],[1,0,0]],58],['bot',[0,-1,0],[[0,0,0],[1,0,0],[1,0,1],[0,0,1]],34]];
+function draw3(){const d=devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;if(!w)return;
+ if(cv.width!=Math.round(w*d)||cv.height!=Math.round(h*d)){cv.width=Math.round(w*d);cv.height=Math.round(h*d)}
+ ctx.setTransform(d,0,0,d,0,0);ctx.clearRect(0,0,w,h);faces=[];
+ const n=Q.n,H=mode=='build'?hm:Q.h,m=mk(w,h,n),cs=getComputedStyle(document.body),line=cs.getPropertyValue('--line')||'#999',ink=cs.getPropertyValue('--mute')||'#666';
+ const poly=(pts,fill,st)=>{ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill()}ctx.strokeStyle=st;ctx.lineWidth=1.2;ctx.stroke()};
+ if(m.sp>.02)for(let r=0;r<n;r++)for(let c=0;c<n;c++){const p=[[0,0],[1,0],[1,1],[0,1]].map(([a,b])=>m.P(c+a,0,r+b));
+  poly(p,'rgba(255,255,255,.55)',line);faces.push({p,t:'floor',x:c,y:-1,z:r})}
+ const cubes=[];for(let r=0;r<n;r++)for(let c=0;c<n;c++)for(let y=0;y<H[r*n+c];y++)cubes.push({x:c,y,z:r,d:m.P(c+.5,y+.5,r+.5)[2]});
+ cubes.sort((a,b)=>a.d-b.d);const ht=(c,r)=>c<0||r<0||c>=n||r>=n?0:H[r*n+c];
+ for(const q of cubes)for(const[nm,nv,vs,l]of FC){
+  const depth=nv[1]*m.sp+(-nv[0]*m.sy+nv[2]*m.cy)*m.cp;if(depth<=.001)continue;
+  if(nm=='bot'){if(q.y>0)continue}else if(nm!='top'&&ht(q.x+nv[0],q.z+nv[2])>q.y)continue;if(nm=='top'&&q.y+1<H[q.z*n+q.x])continue;
+  const p=vs.map(v=>m.P(q.x+v[0],q.y+v[1],q.z+v[2]));poly(p,`hsl(32 90% ${l}%)`,'#7a4510');faces.push({p,t:nm=='top'?'top':nm=='bot'?'bottom':'side',x:q.x,y:q.y,z:q.z,nx:nv[0],nz:nv[2]})}
+ ctx.fillStyle=ink;ctx.font='600 12px Lexend,sans-serif';ctx.textAlign='center';
+ let a=m.P(n/2,0,n+.7);ctx.fillText('FRONT',a[0],a[1]);a=m.P(n+.8,0,n/2);ctx.fillText('RIGHT',a[0],a[1])}
+function inPoly(p,x,y){let c=false;for(let i=0,j=p.length-1;i<p.length;j=i++)if((p[i][1]>y)!=(p[j][1]>y)&&x<(p[j][0]-p[i][0])*(y-p[i][1])/(p[j][1]-p[i][1])+p[i][0])c=!c;return c}
+function act(e,rm){const R=cv.getBoundingClientRect(),x=e.clientX-R.left,y=e.clientY-R.top,n=Q.n;
+ for(let i=faces.length-1;i>=0;i--){const f=faces[i];if(!inPoly(f.p,x,y))continue;const k=f.z*n+f.x;
+  if(rm||edit=='rm'){if(f.t!='floor'&&hm[k]>0)hm[k]--}
+  else if(f.t=='floor'){if(hm[k]==0)hm[k]=1}
+  else if(f.t=='bottom'){}
+  else if(f.t=='top'){if(hm[k]<n&&f.y+1==hm[k])hm[k]++}
+  else{const cx=f.x+f.nx,cz=f.z+f.nz;if(cx>=0&&cz>=0&&cx<n&&cz<n&&hm[cz*n+cx]==f.y&&f.y<n)hm[cz*n+cx]++}
+  msg('');info();draw3();return}}
+let drag=null;
+cv.onpointerdown=e=>{cv.setPointerCapture(e.pointerId);drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,mv:false,b:e.button}};
+cv.onpointermove=e=>{if(!drag)return;if(Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)>6)drag.mv=true;
+ if(drag.mv){yaw+=(e.clientX-drag.x)*.01;pitch=Math.max(-Math.PI/2,Math.min(Math.PI/2,pitch+(e.clientY-drag.y)*.01));draw3()}drag.x=e.clientX;drag.y=e.clientY};
+cv.onpointerup=e=>{if(drag&&!drag.mv&&mode=='build')act(e,drag.b==2||e.shiftKey);drag=null};
+cv.oncontextmenu=e=>e.preventDefault();
+addEventListener('resize',draw3);
+$('tb').onclick=()=>{mode='build';load()};$('td').onclick=()=>{mode='draw';load()};
+load();msg('');
+</script></body></html>
