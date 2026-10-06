@@ -120,9 +120,10 @@ function render(){const n=Q.n;renderSets();score();
 function bar(){const b=$('bar');b.innerHTML='';
  const add=(t,f,c)=>{const e=document.createElement('button');e.textContent=t;e.onclick=f;if(c)e.className=c;b.appendChild(e);return e};
  if(mode=='build'){const a=add('Add cube',()=>{edit='add';bar()},edit=='add'?'on':'');add('Remove cube',()=>{edit='rm';bar()},edit=='rm'?'on':'');
+  add('Fill grid',()=>{hm.fill(Q.n);msg('');info();draw3()});
   add('Clear',()=>{hm.fill(0);msg('');info();draw3()})}
  else add('Clear drawings',()=>{for(const k in dr)dr[k].forEach(r=>r.fill(false));res={};msg('');renderViews()});
- add('3D view',()=>{yaw=-.6;pitch=.55;draw3()});add('Front',()=>{yaw=0;pitch=0;draw3()});add('Right',()=>{yaw=-Math.PI/2;pitch=0;draw3()});add('Top',()=>{yaw=0;pitch=Math.PI/2;draw3()});
+ add('3D view',()=>{yaw=-.6;pitch=.55;draw3()});if(mode=='build'){add('Front view',()=>{yaw=0;pitch=0;draw3()});add('Side view',()=>{yaw=-Math.PI/2;pitch=0;draw3()});add('Top view',()=>{yaw=0;pitch=Math.PI/2;draw3()})}
  add('Turn ↺',()=>{yaw-=Math.PI/2;draw3()});add('Turn ↻',()=>{yaw+=Math.PI/2;draw3()});
  const s=document.createElement('span');s.className='sp';b.appendChild(s);
  add('Check answer',check,'go');add('Next question',()=>{lvl=(lvl+1)%20;load()})}
@@ -135,7 +136,7 @@ function check(){const n=Q.n;
   if(!cnt)return msg('Add some cubes first.','bad');
   if(!bad.length){const g=cnt<=Q.par,pt=g?10:Math.max(5,10-(cnt-Q.par));setS(g?'g':'a',pt);render();
    msg(g?`Correct with ${cnt} cubes, the fewest: 10 points!`:`Correct with ${cnt} cubes: ${pt} points. Use ${Q.par} or fewer for 10.`,g?'ok':'amb')}
-  else{setS('r',0);render();msg(`Incorrect, 0 points. Check the ${bad.join(' and ')} of your model. Look at it from the ${bad.map(k=>({plan:'top',front:'front',side:'right'}[k])).join(' and ')}.`,'bad')}}
+  else{setS('r',0);render();msg(`Incorrect, 0 points. Check the ${bad.join(' and ')} of your model. Look at it from the ${bad.map(k=>({plan:'top',front:'front',side:'side'}[k])).join(' and ')}.`,'bad')}}
  else{res={};['plan','front','side'].forEach(k=>res[k]=JSON.stringify(dr[k])==JSON.stringify(Q.v[k]));
   const ok=Object.values(res).every(Boolean);
   setS(ok?'g':'r',ok?10:0);render();
@@ -161,7 +162,7 @@ function draw3(){const d=devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
   if(nm=='bot'){if(q.y>0)continue}else if(nm!='top'&&ht(q.x+nv[0],q.z+nv[2])>q.y)continue;if(nm=='top'&&q.y+1<H[q.z*n+q.x])continue;
   const p=vs.map(v=>m.P(q.x+v[0],q.y+v[1],q.z+v[2]));poly(p,`hsl(32 90% ${l}%)`,'#7a4510');faces.push({p,t:nm=='top'?'top':nm=='bot'?'bottom':'side',x:q.x,y:q.y,z:q.z,nx:nv[0],nz:nv[2]})}
  ctx.fillStyle=ink;ctx.font='600 12px Lexend,sans-serif';ctx.textAlign='center';
- let a=m.P(n/2,0,n+.7);ctx.fillText('FRONT',a[0],a[1]);a=m.P(n+.8,0,n/2);ctx.fillText('RIGHT',a[0],a[1])}
+ let a=m.P(n/2,0,n+.7);ctx.fillText('FRONT',a[0],a[1]);a=m.P(n+.8,0,n/2);ctx.fillText('SIDE',a[0],a[1])}
 function inPoly(p,x,y){let c=false;for(let i=0,j=p.length-1;i<p.length;j=i++)if((p[i][1]>y)!=(p[j][1]>y)&&x<(p[j][0]-p[i][0])*(y-p[i][1])/(p[j][1]-p[i][1])+p[i][0])c=!c;return c}
 function act(e,rm){const R=cv.getBoundingClientRect(),x=e.clientX-R.left,y=e.clientY-R.top,n=Q.n;
  for(let i=faces.length-1;i>=0;i--){const f=faces[i];if(!inPoly(f.p,x,y))continue;const k=f.z*n+f.x;
