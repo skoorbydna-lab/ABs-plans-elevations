@@ -37,7 +37,7 @@ main{display:grid;grid-template-columns:minmax(260px,5fr) 7fr;gap:14px}
 .grid.bad{border-color:var(--bad)}.grid.good{border-color:var(--ok)}
 canvas{width:100%;height:min(62vw,420px);min-height:300px;display:block;touch-action:none;border-radius:10px;background:var(--grid);cursor:grab}
 .bar{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
-.bar button,.sets button{font:600 .85rem Lexend;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 11px;border-radius:9px;cursor:pointer}
+.bar button,.sets button,#again{font:600 .85rem Lexend;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 11px;border-radius:9px;cursor:pointer}
 .bar button.on,.sets button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .bar .go{background:var(--blue);color:#fff;border-color:var(--blue)}:root[data-theme=dark] .bar .go{color:#10192e}
 .bar .sp{flex:1}
@@ -45,11 +45,11 @@ button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 #msg{margin-top:12px;padding:10px 12px;border-radius:10px;font-weight:600;min-height:44px;background:var(--grid)}
 #msg.ok{background:var(--ok);color:#fff}#msg.bad{background:var(--bad);color:#fff}#msg.amb{background:#c27a00;color:#fff}
 .info{color:var(--mute);font-size:.85rem;margin-top:8px}
-.setbar{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:space-between;align-items:center;margin-top:14px}.sets{display:flex;flex-wrap:wrap;gap:6px}#score{font-weight:700;font-size:1.05rem;text-align:right}#score small{display:block;font-weight:400;color:var(--mute);font-size:.75rem}
+.setbar{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:space-between;align-items:center;margin-top:14px}.sets{display:flex;flex-wrap:wrap;gap:6px}#again.arm{background:var(--bad);border-color:var(--bad);color:#fff}.sc{display:flex;gap:12px;align-items:center}#score{font-weight:700;font-size:1.05rem;text-align:right}#score small{display:block;font-weight:400;color:var(--mute);font-size:.75rem}
 </style></head><body><div class="wrap">
 <div class="top"><div><h1>Plans and elevations</h1><div class="sub" style="margin:0">Cubes, views and 20 questions in each set</div></div>
 <div class="tabs" role="tablist"><button id="tb" class="on">Build from views</button><button id="td">Draw the views</button></div></div>
-<div class="setbar"><div class="sets" id="sets"></div><div id="score"></div></div>
+<div class="setbar"><div class="sets" id="sets"></div><div class="sc"><div id="score"></div><button id="again" title="Clear the scores for this question set">Start again</button></div></div>
 <div id="chips"></div>
 <div class="key"><span><span class="sw g"></span>Correct with fewest cubes</span><span><span class="sw a"></span>Correct, more cubes</span><span><span class="sw r"></span>Incorrect</span><span>Score: 10 for fewest cubes, minus 1 per extra cube (minimum 5), 0 if incorrect</span></div>
 <main>
@@ -180,5 +180,10 @@ cv.onpointerup=e=>{if(drag&&!drag.mv&&mode=='build')act(e,drag.b==2||e.shiftKey)
 cv.oncontextmenu=e=>e.preventDefault();
 addEventListener('resize',draw3);
 $('tb').onclick=()=>{mode='build';load()};$('td').onclick=()=>{mode='draw';load()};
+let armT=null;
+$('again').onclick=()=>{const b=$('again');
+ if(!armT){b.textContent='Click again to clear scores';b.className='arm';armT=setTimeout(()=>{armT=null;b.textContent='Start again';b.className=''},3500);return}
+ clearTimeout(armT);armT=null;b.textContent='Start again';b.className='';
+ store.rec[store.cur.type+'-'+store.cur.seed]={build:{},draw:{}};getDone();lvl=0;save();load();msg('')};
 load();msg('');
 </script></body></html>
